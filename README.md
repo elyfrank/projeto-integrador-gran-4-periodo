@@ -64,7 +64,7 @@ DATABASE_URL="file:./dev.db"
 
 ```bash
 cd backend
-npx prisma migrate dev --name init
+npm run migrate-and-seed
 ```
 
 ### 🚀 5. Inicie o backend

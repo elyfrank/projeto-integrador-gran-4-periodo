@@ -13,14 +13,17 @@ export const getProduct = async (req: Request, res: Response) => {
 };
 
 export const createProduct = async (req: Request, res: Response) => {
-    const {name} = req.body;
-    const product = await productService.createProduct({name});
+    const {name, description, category} = req.body;
+    if (!name || !description || !category) {
+        return res.status(400).json({mensagem: 'Nome, Descrição e Categoria são obrigatórios'});
+    }
+    const product = await productService.createProduct({name, description, category});
     res.status(201).json(product);
 };
 
 export const updateProduct = async (req: Request, res: Response) => {
-    const {name} = req.body;
-    const product = await productService.updateProduct(+req.params.id, {name});
+    const {name, barcode, description, categoryId} = req.body;
+    const product = await productService.updateProduct(+req.params.id, {name, barcode, description, categoryId});
     res.json(product);
 };
 
