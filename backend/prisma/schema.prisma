@@ -39,9 +39,14 @@ model Category {
 }
 
 model Supplier {
-  id        Int      @id @default(autoincrement())
-  name     String
-  productSuppliers ProductSupplier[]
+  id               Int               @id @default(autoincrement())
+  name             String            // Nome da empresa
+  cnpj             String            @unique
+  address          String
+  phone            String
+  email            String
+  mainContact      String
+  productSuppliers ProductSupplier[] // Relacionamento (já existia)
 }
 
 model ProductSupplier {
