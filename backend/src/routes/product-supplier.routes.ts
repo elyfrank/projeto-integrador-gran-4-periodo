@@ -3,8 +3,8 @@ import * as productSupplierController from '../controllers/product-supplier.cont
 
 const router = Router();
 
-router.get('/product/:productId/suppliers', productSupplierController.getSuppliersByProduct);
-router.post('/', productSupplierController.addSupplierToProduct);
+router.get('/product/:product/suppliers', productSupplierController.getSuppliersByProduct);
+router.post('/', productSupplierController.createSupplierToProduct);
 router.delete('/', productSupplierController.deteleSupplierProduct);
 
 

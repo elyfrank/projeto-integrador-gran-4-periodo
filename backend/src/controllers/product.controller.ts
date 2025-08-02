@@ -51,13 +51,9 @@ export const createProduct = async (req: Request, res: Response) => {
         });
 
         res.status(201).json(product);
-    } catch (error: any) {
-        if (error.code === 'P2002') {
-            return res.status(400).json({message: 'Produto com este código de barras já está cadastrado!'});
-        }
-
+    } catch (error) {
         console.error('Erro ao criar produto:', error);
-        res.status(500).json({message: 'Erro interno ao criar produto.', error});
+        res.status(500).json({message: 'Erro interno ao criar produto.'});
     }
 };
 
