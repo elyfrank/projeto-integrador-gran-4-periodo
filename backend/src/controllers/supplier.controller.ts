@@ -24,7 +24,7 @@ export const createSupplier = async (req: Request, res: Response) => {
         cnpj = sanitizeCnpj(cnpj);
         const existingSupplier = await supplierService.findByCnpj(cnpj);
         if (existingSupplier) {
-            return res.status(400).json({ message: 'Fornecedor com esse CNPJ já está cadastrado!' });
+            return res.status(400).json({message: 'Fornecedor com esse CNPJ já está cadastrado!'});
         }
 
         const supplier = await supplierService.createSupplier({
@@ -44,16 +44,22 @@ export const createSupplier = async (req: Request, res: Response) => {
 };
 
 export const updateSupplier = async (req: Request, res: Response) => {
-    const {name, cnpj, address, phone, email, mainContact} = req.body;
-    const supplier = await supplierService.updateSupplier(+req.params.id, {
-        name,
-        cnpj,
-        address,
-        phone,
-        email,
-        mainContact
-    });
-    res.json(supplier);
+    try {
+        const {name, cnpj, address, phone, email, mainContact} = req.body;
+        const supplier = await supplierService.updateSupplier(+req.params.id, {
+            name,
+            cnpj,
+            address,
+            phone,
+            email,
+            mainContact
+        });
+        res.json(supplier);
+    } catch (error) {
+        console.error('Erro ao atualizar fornecedor:', error);
+        res.status(500).json({message: 'Erro interno ao atualizar fornecedor.'});
+    }
+
 };
 
 export const deleteSupplier = async (req: Request, res: Response) => {

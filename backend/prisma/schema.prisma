@@ -16,7 +16,7 @@ model User {
 model Product {
   id               Int       @id @default(autoincrement())
   name             String
-  barcode          String?
+  barcode          Int?     @unique
   description      String
   quantityInStock  Int?
   validityDate     DateTime?
@@ -40,13 +40,16 @@ model Category {
 
 model Supplier {
   id               Int               @id @default(autoincrement())
-  name             String            // Nome da empresa
+  name             String
   cnpj             String            @unique
   address          String
   phone            String
   email            String
   mainContact      String
-  productSuppliers ProductSupplier[] // Relacionamento (já existia)
+  productSuppliers ProductSupplier[]
+
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model ProductSupplier {
