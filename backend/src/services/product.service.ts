@@ -2,8 +2,8 @@ import {PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export const getAllProducts = () => prisma.product.findMany();
-export const getProductById = (id: number) => prisma.product.findUnique({where: {id}});
+export const getAllProducts = () => prisma.product.findMany({ include: { category: true } });
+export const getProductById = (id: number) => prisma.product.findUnique({ where: { id }, include: { category: true } });
 export const createProduct = (data: {
     name: string;
     description: string;

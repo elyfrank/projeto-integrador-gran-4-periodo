@@ -1,24 +1,17 @@
-import {Button} from "@/components/ui/button";
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
 
-type User = {
-    id: number;
-    name: string;
-};
-
-export default async function Home() {
-    const users:User[] = await fetch('http://localhost:3001/api/users')
-        .then((res) => res.json())
-
+export default function Home() {
     return (
-        <main style={{ padding: 20 }}>
-            <h1>Usuários</h1>
-            <ul>
-                {users.map((u) => (
-                    <li key={u.id}>{u.name}</li>
-                ))}
-            </ul>
-            <div>
-                <Button>Click me</Button>
+        <main className="flex flex-col items-center justify-center min-h-screen p-24">
+            <h1 className="text-4xl font-bold mb-8">Bem-vindo ao seu Dashboard</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Link href="/products">
+                    <Button size="lg">Gerenciar Produtos</Button>
+                </Link>
+                <Link href="/supplier">
+                    <Button size="lg">Gerenciar Fornecedores</Button>
+                </Link>
             </div>
         </main>
     );
