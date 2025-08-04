@@ -65,12 +65,28 @@ export default function SuppliersPage() {
         setFilteredSuppliers(data)
     }
 
-    const handleCreateOrUpdateSupplier = async () => {
+    const [errors, setErrors] = useState<Record<string, string>>({})
+
+    const validate = () => {
+        const newErrors: Record<string, string> = {}
+        if (!newSupplier.name) newErrors.name = "Nome é obrigatório"
+        if (!newSupplier.cnpj) newErrors.cnpj = "CNPJ é obrigatório"
+        if (!newSupplier.address) newErrors.address = "Endereço é obrigatório"
+        if (!newSupplier.phone) newErrors.phone = "Telefone é obrigatório"
+        if (!newSupplier.email) newErrors.email = "Email é obrigatório"
+        if (!newSupplier.mainContact) newErrors.mainContact = "Contato Principal é obrigatório"
+
         const existingSupplier = suppliers.find(s => s.cnpj === newSupplier.cnpj && s.id !== selectedSupplier?.id)
         if (existingSupplier) {
-            alert("Este CNPJ já está cadastrado.")
-            return
+            newErrors.cnpj = "Este CNPJ já está cadastrado."
         }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
+    const handleCreateOrUpdateSupplier = async () => {
+        if (!validate()) return
 
         const method = selectedSupplier ? "PUT" : "POST"
         const url = selectedSupplier
@@ -88,6 +104,7 @@ export default function SuppliersPage() {
             setIsDialogOpen(false)
             setSelectedSupplier(null)
             setNewSupplier({ name: "", cnpj: "", address: "", phone: "", email: "", mainContact: "" })
+            setErrors({})
         }
     }
 
@@ -171,69 +188,93 @@ export default function SuppliersPage() {
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">
-                                Nome
+                                Nome *
                             </Label>
                             <Input
                                 id="name"
                                 value={newSupplier.name}
-                                onChange={e => setNewSupplier({ ...newSupplier, name: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, name: e.target.value })
+                                    if (errors.name) setErrors({ ...errors, name: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.name && <span className="col-span-4 text-red-500 text-sm">{errors.name}</span>}
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="cnpj" className="text-right">
-                                CNPJ
+                                CNPJ *
                             </Label>
                             <Input
                                 id="cnpj"
                                 value={newSupplier.cnpj}
-                                onChange={e => setNewSupplier({ ...newSupplier, cnpj: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, cnpj: e.target.value })
+                                    if (errors.cnpj) setErrors({ ...errors, cnpj: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.cnpj && <span className="col-span-4 text-red-500 text-sm">{errors.cnpj}</span>}
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="address" className="text-right">
-                                Endereço
+                                Endereço *
                             </Label>
                             <Input
                                 id="address"
                                 value={newSupplier.address}
-                                onChange={e => setNewSupplier({ ...newSupplier, address: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, address: e.target.value })
+                                    if (errors.address) setErrors({ ...errors, address: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.address && <span className="col-span-4 text-red-500 text-sm">{errors.address}</span>}
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="phone" className="text-right">
-                                Telefone
+                                Telefone *
                             </Label>
                             <Input
                                 id="phone"
                                 value={newSupplier.phone}
-                                onChange={e => setNewSupplier({ ...newSupplier, phone: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, phone: e.target.value })
+                                    if (errors.phone) setErrors({ ...errors, phone: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.phone && <span className="col-span-4 text-red-500 text-sm">{errors.phone}</span>}
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="email" className="text-right">
-                                Email
+                                Email *
                             </Label>
                             <Input
                                 id="email"
                                 value={newSupplier.email}
-                                onChange={e => setNewSupplier({ ...newSupplier, email: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, email: e.target.value })
+                                    if (errors.email) setErrors({ ...errors, email: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.email && <span className="col-span-4 text-red-500 text-sm">{errors.email}</span>}
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="mainContact" className="text-right">
-                                Contato Principal
+                                Contato Principal *
                             </Label>
                             <Input
                                 id="mainContact"
                                 value={newSupplier.mainContact}
-                                onChange={e => setNewSupplier({ ...newSupplier, mainContact: e.target.value })}
+                                onChange={e => {
+                                    setNewSupplier({ ...newSupplier, mainContact: e.target.value })
+                                    if (errors.mainContact) setErrors({ ...errors, mainContact: "" })
+                                }}
                                 className="col-span-3"
                             />
+                            {errors.mainContact && <span className="col-span-4 text-red-500 text-sm">{errors.mainContact}</span>}
                         </div>
                     </div>
                     <DialogFooter>

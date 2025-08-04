@@ -11,6 +11,9 @@ export default function Toolbar() {
                     <Link href="/products" className="hover:underline">
                         Produtos
                     </Link>
+                    <Link href="/product-supplier" className="hover:underline">
+                        Associar Fornecedores
+                    </Link>
                     <Link href="/supplier" className="hover:underline">
                         Fornecedores
                     </Link>
