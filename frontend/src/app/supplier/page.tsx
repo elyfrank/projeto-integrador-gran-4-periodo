@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Dialog,
     DialogContent,
@@ -78,7 +80,7 @@ export default function SuppliersPage() {
 
         const existingSupplier = suppliers.find(s => s.cnpj === newSupplier.cnpj && s.id !== selectedSupplier?.id)
         if (existingSupplier) {
-            newErrors.cnpj = "Este CNPJ já está cadastrado."
+            newErrors.cnpj = "Este CNPJ já está cadastrado.";
         }
 
         setErrors(newErrors)
@@ -105,6 +107,9 @@ export default function SuppliersPage() {
             setSelectedSupplier(null)
             setNewSupplier({ name: "", cnpj: "", address: "", phone: "", email: "", mainContact: "" })
             setErrors({})
+            toast.success(`Fornecedor ${selectedSupplier ? "atualizado" : "cadastrado"} com sucesso!`);
+        } else {
+            toast.error(`Erro ao ${selectedSupplier ? "atualizar" : "cadastrar"} fornecedor.`);
         }
     }
 
@@ -209,10 +214,17 @@ export default function SuppliersPage() {
                                 id="cnpj"
                                 value={newSupplier.cnpj}
                                 onChange={e => {
-                                    setNewSupplier({ ...newSupplier, cnpj: e.target.value })
+                                    const formattedCnpj = e.target.value
+                                        .replace(/\D/g, '')
+                                        .replace(/^(\d{2})(\d)/, '$1.$2')
+                                        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                                        .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                                        .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, '$1.$2.$3/$4-$5')
+                                    setNewSupplier({ ...newSupplier, cnpj: formattedCnpj })
                                     if (errors.cnpj) setErrors({ ...errors, cnpj: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="00.000.000/0000-00"
                             />
                             {errors.cnpj && <span className="col-span-4 text-red-500 text-sm">{errors.cnpj}</span>}
                         </div>
@@ -220,7 +232,7 @@ export default function SuppliersPage() {
                             <Label htmlFor="address" className="text-right">
                                 Endereço *
                             </Label>
-                            <Input
+                            <Textarea
                                 id="address"
                                 value={newSupplier.address}
                                 onChange={e => {
@@ -228,6 +240,7 @@ export default function SuppliersPage() {
                                     if (errors.address) setErrors({ ...errors, address: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="Insira o endereço completo da empresa"
                             />
                             {errors.address && <span className="col-span-4 text-red-500 text-sm">{errors.address}</span>}
                         </div>
@@ -239,10 +252,15 @@ export default function SuppliersPage() {
                                 id="phone"
                                 value={newSupplier.phone}
                                 onChange={e => {
-                                    setNewSupplier({ ...newSupplier, phone: e.target.value })
+                                    const formattedPhone = e.target.value
+                                        .replace(/\D/g, '')
+                                        .replace(/^(\d{2})(\d)/, '($1) $2')
+                                        .replace(/(\d{5})(\d)/, '$1-$2')
+                                    setNewSupplier({ ...newSupplier, phone: formattedPhone })
                                     if (errors.phone) setErrors({ ...errors, phone: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="(00) 00000-0000"
                             />
                             {errors.phone && <span className="col-span-4 text-red-500 text-sm">{errors.phone}</span>}
                         </div>
@@ -258,6 +276,7 @@ export default function SuppliersPage() {
                                     if (errors.email) setErrors({ ...errors, email: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="exemplo@fornecedor.com"
                             />
                             {errors.email && <span className="col-span-4 text-red-500 text-sm">{errors.email}</span>}
                         </div>
@@ -273,6 +292,7 @@ export default function SuppliersPage() {
                                     if (errors.mainContact) setErrors({ ...errors, mainContact: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="Nome do contato principal"
                             />
                             {errors.mainContact && <span className="col-span-4 text-red-500 text-sm">{errors.mainContact}</span>}
                         </div>

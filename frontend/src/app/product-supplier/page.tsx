@@ -5,21 +5,27 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner";
 
 type Product = {
     id: number
     name: string
+    barcode: string
+    description: string
+    imageUrl: string
 }
 
 type Supplier = {
     id: number
     name: string
+    cnpj: string
 }
 
 export default function ProductSupplierPage() {
     const [products, setProducts] = useState<Product[]>([])
     const [suppliers, setSuppliers] = useState<Supplier[]>([])
-    const [selectedProduct, setSelectedProduct] = useState<string>("")
+    const [selectedProductId, setSelectedProductId] = useState<string>("")
+    const [selectedProductDetails, setSelectedProductDetails] = useState<Product | null>(null)
     const [associatedSuppliers, setAssociatedSuppliers] = useState<Supplier[]>([])
     const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([])
 
@@ -29,10 +35,11 @@ export default function ProductSupplierPage() {
     }, [])
 
     useEffect(() => {
-        if (selectedProduct) {
-            fetchAssociatedSuppliers(selectedProduct)
+        if (selectedProductId) {
+            fetchAssociatedSuppliers(selectedProductId)
+            fetchProductDetails(selectedProductId)
         }
-    }, [selectedProduct])
+    }, [selectedProductId])
 
     const fetchProducts = async () => {
         const response = await fetch("http://localhost:3001/api/products")
@@ -52,31 +59,45 @@ export default function ProductSupplierPage() {
         setAssociatedSuppliers(data)
     }
 
+    const fetchProductDetails = async (productId: string) => {
+        const response = await fetch(`http://localhost:3001/api/products/${productId}`)
+        const data = await response.json()
+        setSelectedProductDetails(data)
+    }
+
     const handleAssociateSuppliers = async () => {
-        if (!selectedProduct || selectedSuppliers.length === 0) return
+        if (!selectedProductId || selectedSuppliers.length === 0) return
 
         for (const supplierId of selectedSuppliers) {
+            const isAlreadyAssociated = associatedSuppliers.some(s => String(s.id) === supplierId);
+            if (isAlreadyAssociated) {
+                toast.error(`Fornecedor já associado a este produto.`);
+                continue;
+            }
+
             await fetch("http://localhost:3001/api/product-supplier", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ product: Number(selectedProduct), supplier: Number(supplierId) }),
+                body: JSON.stringify({ productId: Number(selectedProductId), supplierId: Number(supplierId) }),
             })
         }
 
-        fetchAssociatedSuppliers(selectedProduct)
+        fetchAssociatedSuppliers(selectedProductId)
         setSelectedSuppliers([])
+        toast.success("Fornecedor(es) associado(s) com sucesso!");
     }
 
     const handleRemoveAssociation = async (supplierId: number) => {
-        if (!selectedProduct) return
+        if (!selectedProductId) return
 
         await fetch("http://localhost:3001/api/product-supplier", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: Number(selectedProduct), supplierId }),
+            body: JSON.stringify({ productId: Number(selectedProductId), supplierId }),
         })
 
-        fetchAssociatedSuppliers(selectedProduct)
+        fetchAssociatedSuppliers(selectedProductId)
+        toast.success("Associação removida com sucesso!");
     }
 
     return (
@@ -86,7 +107,7 @@ export default function ProductSupplierPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                     <Label htmlFor="product-select">Selecione um Produto</Label>
-                    <Select onValueChange={setSelectedProduct} value={selectedProduct}>
+                    <Select onValueChange={setSelectedProductId} value={selectedProductId}>
                         <SelectTrigger id="product-select">
                             <SelectValue placeholder="Selecione um produto" />
                         </SelectTrigger>
@@ -100,8 +121,26 @@ export default function ProductSupplierPage() {
                     </Select>
                 </div>
 
-                {selectedProduct && (
+                {selectedProductId && (
                     <div>
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle>Detalhes do Produto</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {selectedProductDetails && (
+                                    <div className="space-y-2">
+                                        <p><strong>Nome:</strong> {selectedProductDetails.name}</p>
+                                        <p><strong>Código de Barras:</strong> {selectedProductDetails.barcode}</p>
+                                        <p><strong>Descrição:</strong> {selectedProductDetails.description}</p>
+                                        {selectedProductDetails.imageUrl && (
+                                            <img src={selectedProductDetails.imageUrl} alt={selectedProductDetails.name} className="w-32 h-32 object-cover rounded-md" />
+                                        )}
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
                         <Card>
                             <CardHeader>
                                 <CardTitle>Fornecedores Associados</CardTitle>
@@ -110,7 +149,7 @@ export default function ProductSupplierPage() {
                                 <ul className="space-y-2">
                                     {associatedSuppliers.map(supplier => (
                                         <li key={supplier.id} className="flex justify-between items-center">
-                                            <span>{supplier.name}</span>
+                                            <span>{supplier.name} ({supplier.cnpj})</span>
                                             <Button variant="destructive" size="sm" onClick={() => handleRemoveAssociation(supplier.id)}>
                                                 Remover
                                             </Button>

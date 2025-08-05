@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 import {
     Dialog,
@@ -100,7 +101,7 @@ export default function ProductsPage() {
 
         const existingProduct = products.find(p => p.barcode === newProduct.barcode && p.id !== selectedProduct?.id)
         if (existingProduct) {
-            newErrors.barcode = "Este código de barras já está cadastrado."
+                        toast.error("Este código de barras já está cadastrado.");
         }
 
         setErrors(newErrors)
@@ -226,6 +227,7 @@ export default function ProductsPage() {
                                     if (errors.name) setErrors({ ...errors, name: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="Insira o nome do produto"
                             />
                             {errors.name && <span className="col-span-4 text-red-500 text-sm">{errors.name}</span>}
                         </div>
@@ -241,6 +243,7 @@ export default function ProductsPage() {
                                     if (errors.description) setErrors({ ...errors, description: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="Descreva brevemente o produto"
                             />
                             {errors.description && <span className="col-span-4 text-red-500 text-sm">{errors.description}</span>}
                         </div>
@@ -280,6 +283,7 @@ export default function ProductsPage() {
                                     if (errors.barcode) setErrors({ ...errors, barcode: "" })
                                 }}
                                 className="col-span-3"
+                                placeholder="Insira o código de barras"
                             />
                             {errors.barcode && <span className="col-span-4 text-red-500 text-sm">{errors.barcode}</span>}
                         </div>
@@ -293,6 +297,7 @@ export default function ProductsPage() {
                                 value={newProduct.quantityInStock}
                                 onChange={e => setNewProduct({ ...newProduct, quantityInStock: Number(e.target.value) })}
                                 className="col-span-3"
+                                placeholder="Quantidade disponível"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -305,6 +310,7 @@ export default function ProductsPage() {
                                 value={newProduct.validityDate}
                                 onChange={e => setNewProduct({ ...newProduct, validityDate: e.target.value })}
                                 className="col-span-3"
+                                placeholder="Selecione a data de validade"
                             />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
@@ -316,6 +322,7 @@ export default function ProductsPage() {
                                 value={newProduct.imageUrl}
                                 onChange={e => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
                                 className="col-span-3"
+                                placeholder="URL da Imagem"
                             />
                         </div>
                     </div>
