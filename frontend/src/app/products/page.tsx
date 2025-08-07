@@ -30,6 +30,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {makeGetServerInsertedHTML} from "next/dist/server/app-render/make-get-server-inserted-html";
 
 type Category = {
     id: number
@@ -128,27 +129,47 @@ export default function ProductsPage() {
             body: JSON.stringify(productData),
         })
 
+        const result = await response.json()
+        let mensagesuccess = method == 'PUT' ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!'
         if (response.ok) {
+            toast.success(mensagesuccess)
             fetchProducts()
             setIsDialogOpen(false)
             setSelectedProduct(null)
             setNewProduct({ name: "", description: "", barcode: "", categoryId: 0, quantityInStock: 0, validityDate: "", imageUrl: "" })
             setErrors({})
+        } else {
+            toast.error(result.message)
         }
     }
 
     const handleDeleteProduct = async (id: number) => {
-        await fetch(`http://localhost:3001/api/products/${id}`, {
+        const response = await fetch(`http://localhost:3001/api/products/${id}`, {
             method: "DELETE",
         })
-        fetchProducts()
+        console.log(response);
+        if (response.ok) {
+            toast.success("Produto excluído com sucesso!")
+            fetchProducts()
+        } else {
+            const result = await response.json()
+            toast.error(result.message || "Ocorreu um erro ao excluir o produto.")
+        }
     }
 
     const openDialog = (product: Product | null = null) => {
         setSelectedProduct(product)
         setNewProduct(
             product
-                ? { name: product.name, description: product.description, barcode: product.barcode, categoryId: product.categoryId, quantityInStock: product.quantityInStock, validityDate: product.validityDate, imageUrl: product.imageUrl }
+                ? {
+                    name: product.name || "",
+                    description: product.description || "",
+                    barcode: product.barcode || "",
+                    categoryId: product.categoryId,
+                    quantityInStock: product.quantityInStock ?? 0,
+                    validityDate: product.validityDate ? new Date(product.validityDate).toISOString().split('T')[0] : "",
+                    imageUrl: product.imageUrl || "",
+                }
                 : { name: "", description: "", barcode: "", categoryId: 0, quantityInStock: 0, validityDate: "", imageUrl: "" }
         )
         setIsDialogOpen(true)

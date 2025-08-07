@@ -100,7 +100,7 @@ export default function SuppliersPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newSupplier),
         })
-
+console.log(response);
         if (response.ok) {
             fetchSuppliers()
             setIsDialogOpen(false)
