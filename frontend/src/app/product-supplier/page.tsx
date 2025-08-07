@@ -78,22 +78,22 @@ export default function ProductSupplierPage() {
             await fetch("http://localhost:3001/api/product-supplier", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ productId: Number(selectedProductId), supplierId: Number(supplierId) }),
+                body: JSON.stringify({ product: Number(selectedProductId), supplier: Number(supplierId) }),
             })
         }
 
         fetchAssociatedSuppliers(selectedProductId)
         setSelectedSuppliers([])
-        toast.success("Fornecedor(es) associado(s) com sucesso!");
+        toast.success("Fornecedor associado com sucesso ao produto!");
     }
 
-    const handleRemoveAssociation = async (supplierId: number) => {
+    const handleRemoveAssociation = async (supplier: number) => {
         if (!selectedProductId) return
 
         await fetch("http://localhost:3001/api/product-supplier", {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productId: Number(selectedProductId), supplierId }),
+            body: JSON.stringify({ product: Number(selectedProductId), supplier }),
         })
 
         fetchAssociatedSuppliers(selectedProductId)

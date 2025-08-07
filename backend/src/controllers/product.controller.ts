@@ -82,8 +82,15 @@ export const updateProduct = async (req: Request, res: Response) => {
             quantityInStock = Number(quantityInStock);
         }
 
-        if (validityDate !== undefined) {
-            validityDate = new Date(validityDate);
+        if (validityDate === "") {
+            validityDate = null;
+        } else if (validityDate) {
+            const parsedDate = new Date(validityDate);
+            if (!isNaN(parsedDate.getTime())) {
+                validityDate = parsedDate;
+            } else {
+                validityDate = null;
+            }
         }
 
         const product = await productService.updateProduct(+req.params.id, {
@@ -99,7 +106,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         res.json(product);
     } catch (error) {
         console.error('Erro ao atualizar o produto:', error);
-        res.status(500).json({message: 'Erro interno ao atualizar o produto.'});
+        res.status(500).json({message: 'Erro interno ao atualizar o produto.', error});
     }
 };
 

@@ -100,7 +100,9 @@ export default function SuppliersPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newSupplier),
         })
-console.log(response);
+
+        const result = await response.json()
+
         if (response.ok) {
             fetchSuppliers()
             setIsDialogOpen(false)
@@ -109,15 +111,22 @@ console.log(response);
             setErrors({})
             toast.success(`Fornecedor ${selectedSupplier ? "atualizado" : "cadastrado"} com sucesso!`);
         } else {
-            toast.error(`Erro ao ${selectedSupplier ? "atualizar" : "cadastrar"} fornecedor.`);
+            toast.error(result.message);
         }
     }
 
     const handleDeleteSupplier = async (id: number) => {
-        await fetch(`http://localhost:3001/api/suppliers/${id}`, {
+        const response = await fetch(`http://localhost:3001/api/suppliers/${id}`, {
             method: "DELETE",
         })
-        fetchSuppliers()
+
+        if (response.ok) {
+            toast.success("Fornecedor excluído com sucesso!")
+            fetchSuppliers()
+        } else {
+            const result = await response.json()
+            toast.error(result.message || "Ocorreu um erro ao excluir o fornecedor.")
+        }
     }
 
     const openDialog = (supplier: Supplier | null = null) => {

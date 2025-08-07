@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
     return (
         <main className="flex flex-col items-center justify-center min-h-screen p-24">
-            <h1 className="text-4xl font-bold mb-8">Bem-vindo ao seu Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Link href="/products">
                     <Button size="lg">Gerenciar Produtos</Button>

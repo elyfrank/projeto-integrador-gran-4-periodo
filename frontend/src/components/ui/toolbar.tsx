@@ -5,7 +5,7 @@ export default function Toolbar() {
         <header className="bg-gray-800 text-white p-4">
             <nav className="container mx-auto flex justify-between">
                 <Link href="/" className="text-lg font-bold">
-                    Dashboard
+                    Projeto Integrador 4 Período - Ely Frank - Matrícula 5491084
                 </Link>
                 <div className="space-x-4">
                     <Link href="/products" className="hover:underline">

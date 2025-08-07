@@ -130,14 +130,13 @@ export default function ProductsPage() {
         })
 
         const result = await response.json()
-        let mensagesuccess = method == 'PUT' ? 'Produto atualizado com sucesso!' : 'Produto cadastrado com sucesso!'
         if (response.ok) {
-            toast.success(mensagesuccess)
             fetchProducts()
             setIsDialogOpen(false)
             setSelectedProduct(null)
             setNewProduct({ name: "", description: "", barcode: "", categoryId: 0, quantityInStock: 0, validityDate: "", imageUrl: "" })
             setErrors({})
+            toast.success(`Produto ${selectedProduct ? "atualizado" : "cadastrado"} com sucesso!`);
         } else {
             toast.error(result.message)
         }
@@ -147,7 +146,7 @@ export default function ProductsPage() {
         const response = await fetch(`http://localhost:3001/api/products/${id}`, {
             method: "DELETE",
         })
-        console.log(response);
+
         if (response.ok) {
             toast.success("Produto excluído com sucesso!")
             fetchProducts()
@@ -174,6 +173,20 @@ export default function ProductsPage() {
         )
         setIsDialogOpen(true)
     }
+
+    const formatDate = (dateString) => {
+        if (!dateString) {
+            return '--';
+        }
+
+        const date = new Date(dateString);
+
+        if (isNaN(date.getTime())) {
+            return '--';
+        }
+
+        return date.toLocaleDateString('pt-BR');
+    };
 
     return (
         <div className="container mx-auto p-4">
@@ -208,7 +221,7 @@ export default function ProductsPage() {
                             <TableCell>{product.category?.name}</TableCell>
                             <TableCell>{product.barcode}</TableCell>
                             <TableCell>{product.quantityInStock}</TableCell>
-                            <TableCell>{new Date(product.validityDate).toLocaleDateString()}</TableCell>
+                            <TableCell>{formatDate(product.validityDate)}</TableCell>
                             <TableCell>
                                 <Button variant="outline" size="sm" onClick={() => openDialog(product)}>
                                     Editar
